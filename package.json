@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "@openzeppelin/contracts": "^4.4.0",
-    "hardhat": "^2.7.0"
+    "hardhat": "^2.7.0",
+    "mocha": "^9.1.3"
   }
 }

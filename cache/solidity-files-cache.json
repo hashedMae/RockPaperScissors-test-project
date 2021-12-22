@@ -1,46 +1,9 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/mnt/c/Users/quote/Projects/slingshotRPS/contracts/2_rpsToken.sol": {
-      "lastModificationDate": 1640145456045,
-      "contentHash": "ba21d5c0a05a6297d1bdf83c1534d468",
-      "sourceName": "contracts/2_rpsToken.sol",
-      "solcConfig": {
-        "version": "0.8.7",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
-      ],
-      "versionPragmas": [
-        ">=0.8.0 <0.9.0"
-      ],
-      "artifacts": [
-        "rpsToken"
-      ]
-    },
     "/mnt/c/Users/quote/Projects/slingshotRPS/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
-      "lastModificationDate": 1638761035687,
-      "contentHash": "301fed494a57e27be4323bdff2d054bf",
+      "lastModificationDate": 1640151726039,
+      "contentHash": "f48de0eaae9544072b8766e2eac528a7",
       "sourceName": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -78,8 +41,8 @@
       ]
     },
     "/mnt/c/Users/quote/Projects/slingshotRPS/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
-      "lastModificationDate": 1638761035901,
-      "contentHash": "5f4c7678e2e69875dbd2ec01d3d288c1",
+      "lastModificationDate": 1640151726046,
+      "contentHash": "302d9755e46bc69d7058b0cbe7185e37",
       "sourceName": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -113,8 +76,8 @@
       ]
     },
     "/mnt/c/Users/quote/Projects/slingshotRPS/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
-      "lastModificationDate": 1638761035909,
-      "contentHash": "5e82817b39b46b54032effefa77b2bd9",
+      "lastModificationDate": 1640151735801,
+      "contentHash": "909ab67fc5c25033fe6cd364f8c056f9",
       "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -150,8 +113,8 @@
       ]
     },
     "/mnt/c/Users/quote/Projects/slingshotRPS/node_modules/@openzeppelin/contracts/utils/Context.sol": {
-      "lastModificationDate": 1638761035494,
-      "contentHash": "a06a83834de6f8eb27f6ed608d030ac2",
+      "lastModificationDate": 1640151702538,
+      "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -184,48 +147,9 @@
         "Context"
       ]
     },
-    "/mnt/c/Users/quote/Projects/slingshotRPS/contracts/3_rockPaperScissors.sol": {
-      "lastModificationDate": 1640146458058,
-      "contentHash": "6f0726e8f98351eb246270bfc53fb3f6",
-      "sourceName": "contracts/3_rockPaperScissors.sol",
-      "solcConfig": {
-        "version": "0.8.7",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./2_rpsToken.sol",
-        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
-      ],
-      "versionPragmas": [
-        "=0.8.7"
-      ],
-      "artifacts": [
-        "rockPaperScissors"
-      ]
-    },
     "/mnt/c/Users/quote/Projects/slingshotRPS/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
-      "lastModificationDate": 1638761036007,
-      "contentHash": "cbba874af15bc1c65a1c82aebec1a0fe",
+      "lastModificationDate": 1640151702516,
+      "contentHash": "8398972af73b4e9e5ff3b31cad86234f",
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -258,6 +182,82 @@
       ],
       "artifacts": [
         "Ownable"
+      ]
+    },
+    "/mnt/c/Users/quote/Projects/slingshotRPS/contracts/rockPaperScissors.sol": {
+      "lastModificationDate": 1640150747475,
+      "contentHash": "fed93b035edd42ad4abe884f76aa3310",
+      "sourceName": "contracts/rockPaperScissors.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./rpsToken.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "=0.8.7"
+      ],
+      "artifacts": [
+        "rockPaperScissors"
+      ]
+    },
+    "/mnt/c/Users/quote/Projects/slingshotRPS/contracts/rpsToken.sol": {
+      "lastModificationDate": 1640152102330,
+      "contentHash": "6ee49ec7070d931db851b806b610a321",
+      "sourceName": "contracts/rpsToken.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0 <0.9.0"
+      ],
+      "artifacts": [
+        "rpsToken"
       ]
     }
   }
