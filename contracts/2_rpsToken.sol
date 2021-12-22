@@ -1,7 +1,6 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./1_Storage.sol";
 
 contract rpsToken is ERC20 {
     constructor() ERC20('RockPaperScissorsGO', 'RPS'){

@@ -1,35 +1,17 @@
-pragma solidity >=0.8.0 <0.9.0;
+pragma solidity =0.8.7;
 
 import "./2_rpsToken.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract rockPaperScissors is IERC20, Ownable {
+contract rockPaperScissors   {
 
     
+    address public _zero = 0x0000000000000000000000000000000000000000;
 
-    struct Game{
-        address player1Address;
-        address player2Address;
-        Move player1Move;
-        Move player2Move;
-        uint bet;
-        uint timeStart;
-        uint pot;
-        Result gameResult;
-        }
+    address private _rpsToken;
 
-    Game[] public games;
-
-    function emptyGame() public onlyOwner {
-        games.push();
-    }
-
-    address _rpsToken;
-    address _game;
-    address _zero = 0x0000000000000000000000000000000000000000;
-
-    IERC20 private iRPS = IERC20(_rpsToken);
+    IERC20 public iRPS = IERC20(_rpsToken);
 
     event newGame(address challenger, address challenged, uint betAmount);
     event player1Wins(address player1, Move player1Move, address player2, Move player2Move, uint potAmount);
@@ -57,30 +39,38 @@ contract rockPaperScissors is IERC20, Ownable {
 
     Move constant defaultMove = Move.NONE;
 
-    uint internal _decimals = 10^18;
+    struct Game{
+        address player1Address;
+        address player2Address;
+        Move player1Move;
+        Move player2Move;
+        uint bet;
+        uint timeStart;
+        uint pot;
+        Result gameResult;
+        }
+
+
+    Game[] public games;
+
+    uint private _decimals = 10^18;
+
+    constructor(address rps){
+        _rpsToken = rps;
+    }
 
     modifier checkIfInGame {
        require(_getGameID() == 0, "Please finish your current game before starting a new one.");
        _;
    }
 
-    function approveRPS(uint amount) public {
-        iRPS.approve(msg.sender, amount);
+
+
+    function _checkAllowance(uint _bet) internal view {
+        require(iRPS.allowance(msg.sender, address(this)) >= _bet * _decimals , "You must increase your RPS approval first.");
     }
 
-    function setGameAddress(address gameAddress)public onlyOwner {
-        _game = gameAddress;
-    }
-
-    function setTokenAddress(address token)public onlyOwner {
-        _rpsToken = token;
-    }
-
-    function _checkAllowance(uint _bet) internal{
-        require(iRPS.allowance(msg.sender, _game) >= _bet * _decimals , "You must increase your RPS approval first.");
-    }
-
-    function _checkWinnings(uint _bet) internal{
+    function _checkWinnings(uint _bet) internal view {
         require(_playerWinnings[msg.sender] >= _bet * _decimals , "You don't have enough tokens in your winnings.");
     }
 
@@ -110,14 +100,15 @@ contract rockPaperScissors is IERC20, Ownable {
     
 
     function _createGame(address _secondPlayer, uint _bet) internal{        
-        uint gameID = games.push(Game(msg.sender, _secondPlayer, Move.NONE, Move.NONE, _bet, block.timestamp, 0, Result.NONE));
+        games.push(Game(msg.sender, _secondPlayer, Move.NONE, Move.NONE, _bet, block.timestamp, 0, Result.NONE));
+        uint gameID = games.length - 1;
         _challengeGameID[_secondPlayer] = gameID;
         _currentGameID[msg.sender] = gameID;
         emit newGame(msg.sender, _secondPlayer, _bet);
 
     }
 
-    function _checkChallengePlayer(address _player2) internal {
+    function _checkChallengePlayer(address _player2) internal view {
         require(_challengeGameID[_player2] == 0, "Player already has open challenge");
         require(_currentGameID[_player2] == 0, "Player currently already in a game.");
 
@@ -177,7 +168,7 @@ contract rockPaperScissors is IERC20, Ownable {
 
 function findGameWinnings(uint gameID) public checkIfInGame{
         Game storage _currentGame = games[gameID];
-        uint _bet = _currentGame.bet;
+        uint _bet = _currentGame.bet * _decimals;
         _checkWinnings(_bet);
         _joinGame(_currentGame, gameID);
     }
@@ -197,14 +188,14 @@ function findGameWinnings(uint gameID) public checkIfInGame{
     }
 
     function _transferToPot(Game storage _currentGame, uint _bet) internal {
-        iRPS.transferFrom(msg.sender, _game, _bet * _decimals);
+        iRPS.transferFrom(msg.sender, address(this), _bet * _decimals);
         _currentGame.pot += _bet * _decimals;
     }
 
     function makeMoveWallet(Move playerMove) public {
         uint _id = _getGameID();
         Game storage _currentGame = games[_id];
-        uint _pot = _currentGame.pot;
+       // uint _pot = _currentGame.pot;
         uint _bet = _currentGame.bet;
         _checkAllowance(_bet);
         _transferToPot(_currentGame, _bet);
@@ -214,7 +205,7 @@ function findGameWinnings(uint gameID) public checkIfInGame{
     function makeMoveWinnings(Move playerMove) public {
         uint _id =_getGameID();
         Game storage _currentGame = games[_id];
-        uint _pot = _currentGame.pot;
+       // uint _pot = _currentGame.pot;
         uint _bet = _currentGame.bet;
         _checkWinnings(_bet);
         _currentGame.pot += _bet;
@@ -231,25 +222,23 @@ function findGameWinnings(uint gameID) public checkIfInGame{
         uint _pot) 
         internal{
         require(_currentGame.gameResult != Result.NONE, "Game not finished");
-        if(_currentGame.gameResult == 1){
+        if(_currentGame.gameResult == Result.DRAW){
             _addWinnings(_player1Address, _bet);
             _addWinnings(_player2Address, _bet);
             _currentGame.pot = 0;
             _resetAssignedGameBoth(_player1Address, _player2Address);
             emit noWinner(_player1Move, _bet);
-        } else if(_currentGame.gameResult == 2) {
+        } else if(_currentGame.gameResult == Result.PLAYER1WINS) {
             _addWinnings(_player1Address, _pot);
             _currentGame.pot = 0;
             _resetAssignedGameBoth(_player1Address, _player2Address);
-            emit player1Wins(_player1Address, _player1Move, _player2Address, _player2Address, _pot);
-        } else if(_currentGame.gameResult == 3) {
+            emit player1Wins(_player1Address, _player1Move, _player2Address, _player2Move, _pot);
+        } else if(_currentGame.gameResult == Result.PLAYER2WINS) {
             _addWinnings(_player2Address, _pot);
             _currentGame.pot = 0;
             _resetAssignedGameBoth(_player1Address, _player2Address);
-            emit player2Wins(_player2Address, _player2Move, _player1Address, _player1Address, _pot);
-        } else {
-            revert;
-        }
+            emit player2Wins(_player2Address, _player2Move, _player1Address, _player1Move, _pot);
+        } 
     }
 
     function checkWinner() public{
@@ -262,37 +251,35 @@ function findGameWinnings(uint gameID) public checkIfInGame{
         uint _bet = _currentGame.bet;
         uint _pot = _currentGame.pot;
 
-        if(_player1Move == 0 || _player2Move == 0) {
-            return "Waiting for otherplayer to make move.";
-        } else if(_player1Move == _player2Move){
-            _currentGame.gameResult = 1;
-        } else if(_player1Move == 1 && _player2Move == 2){
-            _currentGame.gameResult = 3;
-        } else if(_player1Move ==1 && _player2Move == 3){
-            _currentGame.gameResult =2;
-        } else if(_player1Move == 2 && _player2Move == 1){
-            _currentGame.gameResult = 2;
-        } else if(_player1Move == 2 && _player2Move == 3){
-            _currentGame.gameResult = 3;
-        } else if(_player1Move == 3 && _player2Move == 1){
-            _currentGame.gameResult = 3;
-        } else if(_player1Move == 3 && _player2Move == 2){
-            _currentGame.gameResult = 2;
-        } else {
-            revert;
-        }
+        require(_player1Move != Move.NONE && _player2Move != Move.NONE, "Waiting for otherplayer to make move.");
+
+        if(_player1Move == _player2Move){
+            _currentGame.gameResult = Result.DRAW;
+        } else if(_player1Move == Move.ROCK && _player2Move == Move.PAPER){
+            _currentGame.gameResult = Result.PLAYER2WINS;
+        } else if(_player1Move == Move.ROCK && _player2Move == Move.SCISSORS){
+            _currentGame.gameResult = Result.PLAYER1WINS;
+        } else if(_player1Move == Move.PAPER && _player2Move == Move.ROCK){
+            _currentGame.gameResult = Result.PLAYER1WINS;
+        } else if(_player1Move == Move.PAPER && _player2Move == Move.SCISSORS){
+            _currentGame.gameResult = Result.PLAYER2WINS;
+        } else if(_player1Move == Move.SCISSORS && _player2Move == Move.ROCK){
+            _currentGame.gameResult = Result.PLAYER2WINS;
+        } else if(_player1Move == Move.SCISSORS && _player2Move == Move.PAPER){
+            _currentGame.gameResult = Result.PLAYER1WINS;
+        } 
         _announceWinner(_currentGame, _player1Address, _player2Address, _player1Move, _player2Move, _bet, _pot);
     }
 
     function withdrawWinnings(uint withdrawalAmount) public {
         require(withdrawalAmount >= _playerWinnings[msg.sender], "Request exceeds balance.");
-        iRPS.transferFrom(this, msg.sender, withdrawalAmount);
-        _playerWinnings[msg.sender] -= withdrawalAmount;
+        iRPS.transferFrom(address(this), msg.sender, withdrawalAmount * _decimals);
+        _playerWinnings[msg.sender] -= withdrawalAmount * _decimals;
     }
-
+/*
     function cancelGame() public {
         uint _id = _getGameID();
         Game storage _currentGame = games[_id];
 
-    }
+    } */
 }
